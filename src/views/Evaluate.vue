@@ -7,7 +7,7 @@
          <p>高于周边商家69.2%</p>
        </div>
        <div class="right">
-        <h4>服务态度
+        <h4>服务评分
             <img src="../assets/imgs/star24_on@3x.png">
             <img src="../assets/imgs/star24_on@3x.png">
             <img src="../assets/imgs/star24_on@3x.png">
@@ -15,7 +15,7 @@
             <img src="../assets/imgs/star24_off@3x.png">
             <span>3.9</span>
         </h4>
-        <h4>服务态度
+        <h4>口味评分
             <img src="../assets/imgs/star24_on@3x.png">
             <img src="../assets/imgs/star24_on@3x.png">
             <img src="../assets/imgs/star24_on@3x.png">
@@ -42,7 +42,7 @@
             <div class="main" v-for="(v,i) in this.data" :key="i">
            <div class="left1"><img :src="v.avatar"> </div>
            <div class="right1">
-               <div class="ttop"><p>{{v.username}}</p>  <span>{{new Date(v.rateTime * 1000).toLocaleString()}}</span></div>
+               <div class="ttop"><p>{{v.username}}</p>  <span>{{new Date(v.rateTime ).toLocaleString()}}</span></div>
                <div>
                    <div class="xing"><span :class="{xxing:v.score>1 }">★</span>
                    <span :class="{xxing:v.score>1 }">★</span>
@@ -53,7 +53,7 @@
                <div class="p">
                    <p>{{v.text}}</p>
                </div>
-               <div><span class="zan"  v-for="(value,index) in v.recommend" :key="index">{{value}} </span>
+               <div  class="zan"><span  v-for="(value,index) in v.recommend" :key="index">{{value}} </span>
                 </div>
            </div>
             </div>
@@ -76,15 +76,16 @@ export default {
         
         getRating().then(res =>{
       this.data= res.data.data;
-    
-      console.log(this.data)
     });
     },
-
 };
 </script>
 
 <style lang="less" scoped>
+.mind{
+    height: 300px;
+    overflow-y:auto;
+}
 .total {
   display: flex;
   justify-content: space-around;
@@ -103,7 +104,8 @@ export default {
     h4 {
       margin-bottom: 10px;
       img {
-        width: 20px;
+        width: 15px;
+        margin-right: 5px;
       }
     }
   }
@@ -154,8 +156,8 @@ export default {
       .left1{
           flex: 0.2;
           img{
-              width: 100%;
-              height: 80%;
+              width: 70px;
+              height: 80px;
           }
       }
       .right1{
@@ -169,4 +171,14 @@ export default {
           color: yellow;
       }
   }
+  .zan{
+              white-space:nowrap;
+   overflow:hidden;
+   text-overflow:ellipsis;
+   font-size: 12px;
+   span{
+       border: 1px solid #ccc;
+       
+   }
+      }
 </style>

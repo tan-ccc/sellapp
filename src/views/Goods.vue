@@ -2,7 +2,7 @@
     <div class="goods-div">
    <div class="left-div">
        <ul class="content">
-       <ul  active-name="1" width="80px" v-for="(v,i) in this.data" :key="i">
+       <ul  active-name="1" width="80px" v-for="(v,i) in goodslist" :key="i">
             <li name="1"  @click="ctitle(i)" 
                :class="{leftGoods:true , selected: i == curSelected}" >  
                <div> 
@@ -20,7 +20,7 @@
    <div class="right-div">
        <ul class="content">
              <Row>
-        <i-col span="24" v-for="(v,i) in this.data" :key="i">
+        <i-col span="24" v-for="(v,i) in goodslist" :key="i">
             <div :id="i">
                    <p class="foodsTitle">{{v.name}}</p>
             <Row class="foodsMind"  v-for="(value,index) in v.foods" :key="index">
@@ -31,7 +31,9 @@
         <Row class="foodsMind" >
         <i-col span="14"> <p class="price">￥<span>{{value.price}}</span> <span>{{value.oldPrice? value.oldPrice:''}}</span> 
         </p></i-col>
-        <i-col span="10"> <button class="add" >+</button></i-col>
+        <i-col span="10">
+            <button class="add"  @click="decNum(value.name,i,index)"  v-show="value.num>0">-</button>
+            {{value.num}}<button class="add" @click="addNum(value.name,i,index)">+</button></i-col>
     </Row>
         </i-col>
         </Row>
@@ -52,30 +54,69 @@ import {  getgoods } from "../api/apis";
    export default {
         data () {
             return {
-               data:{ //商品信息
-
-               },
                curSelected:0 
               
             }
         },
+         //计算属性会进行结果缓存 取多少次都是读取第一次运算的缓存结果
+        //计算属性不能传值
+       computed:{
+           goodslist(){
+             return this.$store.state.goodslist
+           },
+           getH(){
+            var arr=[]
+            let total =0
+            for(let i =0;i<this.$store.state.goodslist.length;i++){
+                let curDivHeight =  document.getElementById(i).offsetHeight
+             arr.push({min:total,max:total+curDivHeight,index:i})
+             //每循环一次累计之前div的高度
+             total +=curDivHeight
+            }
+           return arr
+           }
+       },
          mounted(){
+             //左侧
          new BScroll(document.querySelector('.left-div'),{
              click:true//允许点击
          });
-        this.rightDiv = new BScroll(document.querySelector('.right-div'))
+         //右侧滚动板
+        this.rightDiv = new BScroll(document.querySelector('.right-div'),{
+            probeType:3
+        });
+           // 形参o接收滚动坐标
+        this.rightDiv.on('scroll',( {y} )=>{
+        let _y = Math.abs(y)
+        console.log(_y)
+        for(let divobj of this.getH){
+            if(_y>=divobj.min&&_y<divobj.max){
+                this.curSelected = divobj.index
+                return//结束循环
+            }
+        }
+        });
+
         },
         methods:{
          ctitle(title){
             this.curSelected=title;
             this.rightDiv.scrollToElement(document.getElementById(title),600);
-         }
+         },
+         addNum(name,a,b){
+             console.log(name,a,b)
+             var i=[a,b]
+              this.$store.commit('add',i)
+         },
+         decNum(name,a,b){
+             var index=[a,b]
+            console.log(name,index)
+              this.$store.commit('dec',index)
+         },
         },
-       
        created(){
             getgoods().then(res =>{
-      this.data= res.data.data;
-      console.log(res.data.data)
+      this.$store.commit('initGoodsList',res.data.data)
     });
        }
     }

@@ -40,12 +40,20 @@
         <div class="main">
              <router-view></router-view>
         </div>
-        <div class="shopcar-bar">
-            <Row type="flex" justify="space-around" class="code-row-bg">
-        <i-col span="4"><img src="../assets/imgs/car.png" alt=""></i-col>
-        <i-col span="4">￥0</i-col>
-        <i-col span="4">col-4</i-col>
-        <i-col span="4">col-4</i-col>
+        <transition name="slide-fade">
+            <div class="shopcar-board" v-show="showcarShow">
+               <div>
+                   <div>{{getAdult}}</div><div>单价</div><div>数量</div><div>金额</div>
+               </div>
+            </div>
+        </transition>
+        
+        <div class="shopcar-bar" @click="showcarShow=!showcarShow">
+            <Row type="flex" justify="space-between" class="code-row-bg">
+        <i-col span="3" class="car"><img src="../assets/imgs/car.png" alt=""></i-col>
+        <i-col span="2" class="totalp">￥0 </i-col> 
+        <i-col span="8" class="deliveryPrice">另需配送费 ￥{{data.deliveryPrice}} 元</i-col>
+        <i-col span="7" class="minPrice">￥{{data.minPrice}} 起送</i-col>
            </Row>
         </div>
     </div>
@@ -54,20 +62,36 @@
  <script>
  
 import { getSeller } from "../api/apis";
+import {  getgoods } from "../api/apis";
 export default {
   data() {
     return {
+        showcarShow:false,
       data: {}, //商家信息
      
     };
   },
+  computed:{
+      getAdult(){
+          return this.$store.getters.getAdult
+      },
+       getGoodslist(){
+             return this.$store.getters.getGoodslist;
+       },
+       goodslist(){
+             return this.$store.state.goodslist
+           },
+       
+  },
   created() {
-  const that = this;      
+  const that = this;  
     getSeller().then(res => {
       this.data = res.data.data;
       that.$router.push("/goods"); 
     });
-   
+          getgoods().then(res =>{
+      this.$store.commit('initGoodsList',res.data.data)
+    });
   }
 };
 </script>
@@ -76,6 +100,27 @@ export default {
 * {
   margin: 0;
   padding: 0;
+}
+.nav{
+    padding-top: 20px;
+    border-bottom: #ccc 1px solid;
+}
+.car{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+   text-align: center;
+    img{
+        margin: 0;
+        padding: 0;
+        position: fixed;
+        bottom: 20px;
+        left:20px;
+        height: 60px !important;
+        width: 60px !important;
+        border-radius: 50%;
+          border: #141c27 10px solid;
+    }
 }
 .app{
     display: flex;
@@ -100,7 +145,21 @@ export default {
   height: 60px;
   width: 100%;
   bottom: 0; 
+  color: #ccc;
   background-color: #141c27;
+  .deliveryPrice{
+       padding-top: 20px;
+  }
+  .minPrice{
+          padding-top: 20px;
+      background: #3c3c3c;
+      text-align: center;
+  }
+  .totalp{
+          margin-top: 20px;
+      border-right: 1px solid #3c3c3c;
+      height: 20px;
+  }
   img{
       width: 70%;
       height: 80%;
@@ -159,5 +218,23 @@ export default {
         width: 20px;
 
     } 
+}
+.shopcar-board{
+position: fixed;
+height: 300px;
+width: 100%;
+bottom:60px;
+background: thistle;
+}
+.slide-fade-enter-active {
+  transition: all .4s ease;
+}
+.slide-fade-leave-active {
+  transition: all .4s ease
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active for below version 2.1.8 */ {
+  transform: translateY(200px);
+  opacity: 0;
 }
 </style>
