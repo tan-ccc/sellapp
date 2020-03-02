@@ -5,6 +5,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     //存放所有交互数据
     state:{
+        totalMoney:0,
         scarlist:[],
         goodslist:[],
         list:[{name:'cc',age:17},
@@ -19,12 +20,13 @@ export default new Vuex.Store({
 //第一个参数函数名,第二个参数要传入的值
     mutations:{
         dec(state,index){
-            state.goodslist[index[0]].foods[index[1]].num--
+            state.goodslist[index[0]].foods[index[1]].num--;
+            state.totalMoney-=state.goodslist[index[0]].foods[index[1]].price
         },
         add(state,i){
             console.log({i})
-            state.goodslist[i[0]].foods[i[1]].num++  
-           console.log(state.scarlist)
+            state.goodslist[i[0]].foods[i[1]].num++ ;
+            state.totalMoney+=state.goodslist[i[0]].foods[i[1]].price
         },
         changeName(state,newName){
             state.name = newName
@@ -43,11 +45,11 @@ export default new Vuex.Store({
         getGoodslist(state){
             for(var i=0;i<state.goodslist.length;i++){
                 state.goodslist[i].foods
-                for(var j=0;j< state.goodslist[i].foods.length;j++){
-                    console.log(state.goodslist[i].foods[j])
-                    return state.goodslist[i].foods[j].filter(obj=> obj.num>0)
+            
+                 
+                    return state.goodslist[i].foods.filter(obj=> obj.num>0)
                    
-                }
+                
             }
            
         }

@@ -42,8 +42,10 @@
         </div>
         <transition name="slide-fade">
             <div class="shopcar-board" v-show="showcarShow">
-               <div>
-                   <div>{{getAdult}}</div><div>单价</div><div>数量</div><div>金额</div>
+               <div v-for="(v,i) in getGoodslist" :key="i">
+                    <Row type="flex" justify="space-between" class="code-row-bg">
+                   <div>{{v.name}}</div><div>单价:{{v.price}}元</div><div>数量{{v.num}}</div><div>总计:{{v.price*v.num}}元</div>
+                    </Row>
                </div>
             </div>
         </transition>
@@ -51,7 +53,7 @@
         <div class="shopcar-bar" @click="showcarShow=!showcarShow">
             <Row type="flex" justify="space-between" class="code-row-bg">
         <i-col span="3" class="car"><img src="../assets/imgs/car.png" alt=""></i-col>
-        <i-col span="2" class="totalp">￥0 </i-col> 
+        <i-col span="2" class="totalp">￥<span>{{getTotal}}</span> </i-col> 
         <i-col span="8" class="deliveryPrice">另需配送费 ￥{{data.deliveryPrice}} 元</i-col>
         <i-col span="7" class="minPrice">￥{{data.minPrice}} 起送</i-col>
            </Row>
@@ -64,14 +66,19 @@
 import { getSeller } from "../api/apis";
 import {  getgoods } from "../api/apis";
 export default {
+    
   data() {
     return {
+        total:0,
         showcarShow:false,
       data: {}, //商家信息
      
     };
   },
   computed:{
+      getTotal(){
+            return this.$store.state.totalMoney
+      },
       getAdult(){
           return this.$store.getters.getAdult
       },
@@ -81,7 +88,6 @@ export default {
        goodslist(){
              return this.$store.state.goodslist
            },
-       
   },
   created() {
   const that = this;  
@@ -221,10 +227,11 @@ export default {
 }
 .shopcar-board{
 position: fixed;
-height: 300px;
+height: 200px;
 width: 100%;
 bottom:60px;
-background: thistle;
+background: rgb(134, 128, 128);
+color: #ccc;
 }
 .slide-fade-enter-active {
   transition: all .4s ease;
